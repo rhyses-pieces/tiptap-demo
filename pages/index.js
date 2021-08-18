@@ -1,3 +1,4 @@
+import Editor from '../components/editor'
 import TodoForm from '../components/todo-form'
 
 function Index({ user }) {
@@ -8,6 +9,7 @@ function Index({ user }) {
           Welcome, <span className="bg-yellow-400">{user.username}</span>!
         </h3>
         <TodoForm />
+        <Editor />
       </div>
     )
   } else {

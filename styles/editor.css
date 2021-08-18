@@ -1,0 +1,7 @@
+.toolbar {
+    @apply bg-gray-300 text-gray-700;
+}
+
+.toolbar button {
+    @apply m-1 p-1 rounded bg-gray-800 text-white;
+}
