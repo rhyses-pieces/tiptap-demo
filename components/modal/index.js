@@ -18,6 +18,7 @@ function LoginModal({ toggle, modalType, setUser }) {
       const user = await userbase.signUp({
         username,
         password,
+        email,
         rememberMe: 'none',
       })
       setUser(user)
@@ -37,6 +38,45 @@ function LoginModal({ toggle, modalType, setUser }) {
         username,
         password,
         rememberMe: 'none',
+      })
+      setUser(user)
+      setLoading(false)
+      toggle(false)
+    } catch (e) {
+      setLoading(false)
+      setError(e.message)
+    }
+  }
+
+  async function handleForgotPass(e) {
+    e.preventDefault()
+    setLoading(true)
+    try {
+      await userbase.forgotPassword({
+        username,
+        deleteEndToEndEncryptedData: true
+      })
+      // send alert
+      window.alert('Please check your email for your temporary password!')
+      // send actual email?
+
+      setLoading(false)
+      toggle(false)
+    } catch (e) {
+      setLoading(false)
+      setError(e.message)
+    }
+  }
+
+  async function handleUpdateUser(e) {
+    e.preventDefault()
+    setLoading(true)
+    try {
+      const user = await userbase.updateUser({
+        username,
+        currentPassword,
+        newPassword,
+        email
       })
       setUser(user)
       setLoading(false)
