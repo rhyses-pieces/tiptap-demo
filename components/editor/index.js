@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import MenuBar from './menubar'
 import StarterKit from '@tiptap/starter-kit'
+import Color from '@tiptap/extension-color'
 import FontFamily from '@tiptap/extension-font-family'
 import Highlight from '@tiptap/extension-highlight'
 import Image from '@tiptap/extension-image'
@@ -12,10 +13,62 @@ import TextStyle from '@tiptap/extension-text-style'
 import Typography from '@tiptap/extension-typography'
 import Underline from '@tiptap/extension-underline'
 
+// extend textstyle extension to add fontsize
+const FontSize = TextStyle.extend({ 
+  name: 'fontSize',
+
+  defaultOptions: {
+    types: ['textStyle'],
+  },
+
+  addGlobalAttributes() {
+    return [
+      {
+        types: this.options.types,
+        attributes: {
+          fontSize: {
+            default: null,
+            renderHTML: attributes => {
+              if (!attributes.fontSize) {
+                return {}
+              }
+
+              return {
+                style: `font-size: ${attributes.fontSize}`,
+              }
+            },
+            parseHTML: element => ({
+              fontSize: element.style.fontSize.replace(/['"]+/g, ''),
+            }),
+          },
+        },
+      },
+    ]
+  },
+
+  addCommands() {
+    return {
+      setFontSize: fontSize => ({ chain }) => {
+        return chain()
+          .setMark('textStyle', { fontSize })
+          .run()
+      },
+      unsetFontSize: () => ({ chain }) => {
+        return chain()
+          .setMark('textStyle', { fontSize: null })
+          .removeEmptyTextStyle()
+          .run()
+      },
+    }
+  },
+})
+
 const Editor = () => {
   const editor = useEditor({
     extensions: [
+      Color,
       FontFamily,
+      FontSize,
       Highlight,
       Image,
       StarterKit.configure({
