@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     FaBold,
     FaItalic,
@@ -15,7 +15,10 @@ import {
     FaListUl,
     FaListOl,
     FaSubscript,
-    FaSuperscript
+    FaSuperscript,
+    FaCode,
+    FaFileCode,
+    FaGripLines
 } from 'react-icons/fa'
 
 const MenuBar = ({ editor }) => {
@@ -23,12 +26,28 @@ const MenuBar = ({ editor }) => {
     return null
   }
 
+  const fontFamilies = [
+      { value: 'sans-serif', label: 'Sans-serif' },
+      { value: 'serif', label: 'Serif' },
+      { value: 'monospace', label: 'Monospace' },
+  ]
+
+  const headingLevels = [
+      { value: '7', label: 'paragraph' },
+      { value: '1', label: 'heading 1' },
+      { value: '2', label: 'heading 2' },
+      { value: '3', label: 'heading 3' },
+      { value: '4', label: 'heading 4' },
+      { value: '5', label: 'heading 5' },
+      { value: '6', label: 'heading 6' },
+  ]
+
   const [font, setFont] = useState('sans-serif')
   const [heading, setHeading] = useState({level: 7})
 
   const handleFontChange = (e) => {
-      setFont(e.target.value)
-      editor.chain().focus().setFontFamily(e.target.value).run()
+    setFont(e.target.value)
+    editor.chain().focus().setFontFamily(e.target.value).run()
   }
 
   const handleHeadingChange = (e) => {
@@ -36,13 +55,6 @@ const MenuBar = ({ editor }) => {
     if (editor.can().toggleHeading({level: parseInt(e.target.value, 10)})) {
         editor.chain().focus().toggleHeading({level: parseInt(e.target.value, 10)}).run()
     } else {
-        // check if slected text has heading,
-        // if so apply appropriate level ({level: #}) in select value with setHeading()
-        // otherwise, default to paragraph
-        // let selected = document.querySelector('.ProseMirror').getSelection()
-        // if (selected === editor.isActive('heading')) {
-        //     setHeading()
-        // }
         editor.chain().focus().setParagraph().run()
     }
   }
@@ -50,116 +62,115 @@ const MenuBar = ({ editor }) => {
   return (
     <nav className="toolbar w-full mx-auto">
       <select value={font} onChange={handleFontChange}>
-        <option value="sans-serif">Sans-serif</option>
-        <option value="serif">Serif</option>
-        <option value="monospace">Monospace</option>
-        <option value="Comic Sans MS, Comic Sans">Comic Sans</option>
-        <option value="Inter">Inter</option>
+        {fontFamilies.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
       </select>
 
       <select value={heading} onChange={handleHeadingChange}>
-        <option value="7">paragraph</option>
-        <option value="1">heading 1</option>
-        <option value="2">heading 2</option>
-        <option value="3">heading 3!</option>
-        <option value="4">heading 4</option>
-        <option value="5">heading 5</option>
-        <option value="6">heading 6</option>
+        {headingLevels.map((level) => <option key={level.value} value={level.value}>{level.label}</option>)}
       </select>
 
       <button
         onClick={() => editor.chain().focus().toggleBold().run()}
         className={editor.isActive('bold') ? 'is-active' : ''}
       >
-        bold
+        <FaBold />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleItalic().run()}
         className={editor.isActive('italic') ? 'is-active' : ''}
       >
-        italic
+        <FaItalic />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleUnderline().run()}
         className={editor.isActive('underline') ? 'is-active' : ''}
       >
-        underline
+        <FaUnderline />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleStrike().run()}
         className={editor.isActive('strike') ? 'is-active' : ''}
       >
-        strike
+        <FaStrikethrough />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleCode().run()}
         className={editor.isActive('code') ? 'is-active' : ''}
       >
-        code
+        <FaCode />
+      </button>
+      <button
+        onClick={() => editor.chain().focus().toggleSuperscript().run()}
+        className={editor.isActive('superscript') ? 'is-active' : ''}
+      >
+        <FaSuperscript />
+      </button>
+      <button
+        onClick={() => editor.chain().focus().toggleSubscript().run()}
+        className={editor.isActive('subscript') ? 'is-active' : ''}
+      >
+        <FaSubscript />
       </button>
       <button onClick={() => editor.chain().focus().unsetAllMarks().run()}>
-        clear marks
+        <FaRemoveFormat />
       </button>
 
       <button
         onClick={() => editor.chain().focus().setTextAlign('left').run()}
         className={editor.isActive({ textAlign: 'left' }) ? 'is-active' : ''}
       >
-        left
+        <FaAlignLeft />
       </button>
-            <button
+      <button
         onClick={() => editor.chain().focus().setTextAlign('center').run()}
         className={editor.isActive({ textAlign: 'center' }) ? 'is-active' : ''}
       >
-        center
+        <FaAlignCenter />
       </button>
-            <button
+      <button
         onClick={() => editor.chain().focus().setTextAlign('right').run()}
         className={editor.isActive({ textAlign: 'right' }) ? 'is-active' : ''}
       >
-        right
+        <FaAlignRight />
       </button>
       <button
         onClick={() => editor.chain().focus().setTextAlign('justify').run()}
         className={editor.isActive({ textAlign: 'justify' }) ? 'is-active' : ''}
       >
-        justify
+        <FaAlignJustify />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         className={editor.isActive('bulletList') ? 'is-active' : ''}
       >
-        bullet list
+        <FaListUl />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
         className={editor.isActive('orderedList') ? 'is-active' : ''}
       >
-        ordered list
+        <FaListOl />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleCodeBlock().run()}
         className={editor.isActive('codeBlock') ? 'is-active' : ''}
       >
-        code block
+        <FaFileCode />
       </button>
       <button
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
         className={editor.isActive('blockquote') ? 'is-active' : ''}
       >
-        blockquote
+        <FaQuoteLeft />
       </button>
       <button onClick={() => editor.chain().focus().setHorizontalRule().run()}>
-        horizontal rule
-      </button>
-      <button onClick={() => editor.chain().focus().setHardBreak().run()}>
-        hard break
+        <FaGripLines />
       </button>
       <button onClick={() => editor.chain().focus().undo().run()}>
-        undo
+        <FaUndo />
       </button>
       <button onClick={() => editor.chain().focus().redo().run()}>
-        redo
+        <FaRedo />
       </button>
     </nav>
   )
