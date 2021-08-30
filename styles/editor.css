@@ -3,5 +3,9 @@
 }
 
 .toolbar button {
-    @apply m-1 p-1 rounded bg-gray-800 text-white;
+    @apply m-1 p-1 rounded bg-gray-400 text-gray-800;
+}
+
+.toolbar button.is-active {
+    @apply bg-gray-700 text-white
 }

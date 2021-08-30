@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import MenuBar from './menubar'
 import StarterKit from '@tiptap/starter-kit'
@@ -65,6 +65,11 @@ const FontSize = TextStyle.extend({
 
 const Editor = () => {
   const editor = useEditor({
+    editorProps: {
+      attributes: {
+        class: 'prose prose-sm sm:prose lg:prose-lg mx-auto focus:outline-none',
+      },
+    },
     extensions: [
       Color,
       FontFamily,
@@ -73,6 +78,9 @@ const Editor = () => {
       Image,
       StarterKit.configure({
         // disable this for collab extension history: false,
+        heading: {
+          levels: [1, 2, 3],
+        },
       }),
       Subscript,
       Superscript,
@@ -102,8 +110,8 @@ const Editor = () => {
         Isn’t that great? And all of that is editable. But wait, there’s more. Let’s try a code block:
       </p>
       <pre><code class="language-css">body {
-  display: none;
-}</code></pre>
+        display: none;
+      }</code></pre>
       <p>
         I know, I know, this is impressive. It’s only the tip of the iceberg though. Give it a try and click a little bit around. Don’t forget to check the other examples too.
       </p>

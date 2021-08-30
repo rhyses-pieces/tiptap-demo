@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import {
     FaBold,
     FaItalic,
@@ -21,53 +20,102 @@ import {
     FaGripLines
 } from 'react-icons/fa'
 
+import { useState } from 'react'
+import Select from 'react-select'
+import CreatableSelect from 'react-select/creatable';
+
 const MenuBar = ({ editor }) => {
   if (!editor) {
     return null
   }
 
-  const fontFamilies = [
-      { value: 'sans-serif', label: 'Sans-serif' },
-      { value: 'serif', label: 'Serif' },
-      { value: 'monospace', label: 'Monospace' },
+  const fontList = [
+    { label: 'Default', value: 'Atkinson Hyperlegible, sans-serif' },
+    { label: 'Sans-serif', value: 'sans-serif' },
+    { label: 'Serif', value: 'serif' },
+    { label: 'Monospace', value: 'monospace' },
   ]
 
-  const headingLevels = [
-      { value: '7', label: 'paragraph' },
-      { value: '1', label: 'heading 1' },
-      { value: '2', label: 'heading 2' },
-      { value: '3', label: 'heading 3' },
-      { value: '4', label: 'heading 4' },
-      { value: '5', label: 'heading 5' },
-      { value: '6', label: 'heading 6' },
+  const sizeList = [
+    { label: '12px', value: '12px' },
+    { label: '14px', value: '14px' },
+    { label: '16px', value: '16px' },
+    { label: '18px', value: '18px' },
+    { label: '20px', value: '20px' },
   ]
 
-  const [font, setFont] = useState('sans-serif')
-  const [heading, setHeading] = useState({level: 7})
+  const headList = [
+    { label: 'Paragraph', value: '4' },
+    { label: 'Heading 1', value: '1' },
+    { label: 'Heading 2', value: '2' },
+    { label: 'Heading 3', value: '3' },
+  ]
 
-  const handleFontChange = (e) => {
-    setFont(e.target.value)
-    editor.chain().focus().setFontFamily(e.target.value).run()
-  }
-
-  const handleHeadingChange = (e) => {
-    setHeading(e.target.value)
-    if (editor.can().toggleHeading({level: parseInt(e.target.value, 10)})) {
-        editor.chain().focus().toggleHeading({level: parseInt(e.target.value, 10)}).run()
-    } else {
-        editor.chain().focus().setParagraph().run()
-    }
-  }
+  const [font, setFont] = useState('')
+  const [size, setSize] = useState('')
+  const [head, setHead] = useState('')
+  const [selectedFont, setSelectedFont] = useState([])
+  const [selectedSize, setSelectedSize] = useState([])
+  const [selectedHead, setSelectedHead] = useState([])
 
   return (
     <nav className="toolbar w-full mx-auto">
-      <select value={font} onChange={handleFontChange}>
-        {fontFamilies.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
-      </select>
+      <div className="inline-flex space-x-0.5">
+        <Select
+          name="fontFamily"
+          placeholder="Select font..."
+          className="flex-1 px-2 py-1"
+          isSearchable="true"
+          defaultValue={fontList.at(0)}
+          value={
+            editor.isActive('textStyle', {fontFamily: font}) ? (
+              selectedFont.find(index => fontList[index])
+            ) : fontList.at(0)
+          }
+          options={fontList}
+          onChange={({value: fontSel}) => {
+            setFont(fontSel)
+            editor.chain().focus().setFontFamily(fontSel).run()
+          }}
+        />
 
-      <select value={heading} onChange={handleHeadingChange}>
-        {headingLevels.map((level) => <option key={level.value} value={level.value}>{level.label}</option>)}
-      </select>
+        <CreatableSelect
+          name="fontSize"
+          placeholder="Select size..."
+          className="flex-1 px-2 py-1"
+          value={
+            editor.isActive('textStyle', {fontSize: size}) ? (
+              selectedSize.find(index => sizeList[index])
+            ) : ''
+          }
+          options={sizeList}
+          onChange={({value: sizeSel}) => {
+            setSize(sizeSel)
+            editor.chain().focus().setFontSize(sizeSel).run()
+          }}
+        />
+
+        <Select
+          name="headingList"
+          placeholder="Select heading..."
+          className="flex-1 px-2 py-1"
+          defaultValue={headList[0]}
+          value={
+            editor.isActive('heading', {level: parseInt(head, 10)}) ? (
+              selectedHead.find(index => headList[index])
+            ) : headList.at(0)
+          }
+          options={headList}
+          onChange={({value: headSel}) => {
+            setHead(headSel)
+            if (editor.can().toggleHeading({level: parseInt(headSel, 10)})) {
+              editor.chain().focus().toggleHeading({level: parseInt(headSel, 10)}).run()
+            } else {
+              editor.chain().focus().setParagraph().run()
+            }
+          }}
+        />
+      </div>
 
       <button
         onClick={() => editor.chain().focus().toggleBold().run()}
